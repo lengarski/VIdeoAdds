@@ -1,24 +1,26 @@
 package eu.lengarski.videoadds;
 
-import android.graphics.Rect;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.MediaController;
-import android.widget.VideoView;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 public class MainActivity
         extends AppCompatActivity
 {
 
-    private VideoView videoView;
+    private WebView wv;
+    private ConstraintLayout layout;
+
+    private ImageView iv;
 
     @RequiresApi (api = Build.VERSION_CODES.M)
     @Override
@@ -27,108 +29,69 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        videoView = findViewById(R.id.videoView);
+        iv = (ImageView) findViewById(R.id.img);
 
-        videoView.getCurrentPosition();
+//        Bitmap image = new Bitmap();
 
-        Log.d("###", "is playing " + videoView.isPlaying());
+//        iv.setImageBitmap(image);
 
-        Log.d("###", " duration " + videoView.getDuration());
+        iv.setImageResource(R.drawable.img123);
+        layout = (ConstraintLayout) findViewById(R.id.test_layout);
+        WebView webView = new WebView(MainActivity.this);
+        webView.setId(R.id.webview_ad);
+        webView.setWebViewClient(new WebViewClient());
 
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setAppCacheEnabled(true);
 
-        videoView.setOnFocusChangeListener(new View.OnFocusChangeListener()
-        {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus)
-            {
-                Log.d("###", " on focus change listener  " + hasFocus);
-            }
-        });
+        webView.setScaleX(.7f);
+        webView.setScaleY(.7f);
+//webView.getSettings().set
 
-        videoView.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Log.d("###", " ot click listener");
-            }
-        });
+        webView.loadUrl("https://recognified.com/Showroom/adops/assets/preview/creatives/2020/03/12/4711_RemixCologne_In-Image_Wrap_a2/v1/index.html?t=0");
 
-        videoView.removeOnLayoutChangeListener(new View.OnLayoutChangeListener()
-        {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
-            {
-                Log.d("###", left + " " + top);
-            }
-        });
+        webView.setBackgroundColor(Color.TRANSPARENT);
 
 
-        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.video;
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
 
-        Uri uri = Uri.parse(videoPath);
+                Toast.makeText(getApplicationContext()," "+ webView.getWidth() + " width ", Toast.LENGTH_SHORT).show();
 
-        videoView.setVideoURI(uri);
+//        webView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                Toast.makeText(getApplicationContext(),"Asdf", Toast.LENGTH_SHORT).show();
+//                return true;
+//            }
+//        });
 
-        MediaController mc = new MediaController(this);
-        videoView.setMediaController(mc);
-        mc.setAnchorView(videoView);
-
-
-        int right = videoView.getRight();
-        int top = videoView.getTop();
-
-        Log.d("###", "top " + top + " right " + right);
-
-        Log.d("###", "is playing " + videoView.isPlaying());
-
-        Log.d("###", " duration " + videoView.getDuration());
-
-
-        mc.setOnKeyListener(new View.OnKeyListener()
-        {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event)
-            {
-                Log.d("###", "mc.onLeyListener");
-
-                return false;
-            }
-        });
-
-        videoView.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                Log.d("###", " on touch " + event.getAction());
-
-                Rect rect = new Rect();
-                videoView.getLocalVisibleRect(rect);
-                int arr[] = new int[2];
-
-                videoView.getLocationOnScreen(arr);
-videoView.getLocationInWindow(arr);
+        ConstraintSet set = new ConstraintSet();
+        set.clone(layout);
+        set.connect(webView.getId(), ConstraintSet.TOP, iv.getId(), ConstraintSet.TOP, 0);
+        set.connect(webView.getId(), ConstraintSet.BOTTOM, iv.getId(), ConstraintSet.BOTTOM, 0);
+        set.connect(webView.getId(), ConstraintSet.LEFT, iv.getId(), ConstraintSet.LEFT, 0);
+        set.connect(webView.getId(), ConstraintSet.RIGHT, iv.getId(), ConstraintSet.RIGHT, 0);
 
 
-                return false;
-            }
-        });
-        videoView.setOnContextClickListener(new View.OnContextClickListener()
-        {
-            @Override
-            public boolean onContextClick(View v)
-            {
-                return false;
-            }
-        });
+        set.setScaleX(webView.getId(),.4f);
+        set.setScaleY(webView.getId(),.4f);
+//        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        lp.leftToLeft = iv.getId();
+//        lp.topToTop = iv.getId();
+//        lp.rightToLeft =iv.getId();
+//        lp.bottomToBottom = iv.getId();
+//
+//        webView.setLayoutParams(lp);
+
+        layout.addView(webView,640,360);
+
+        set.applyTo(layout);
 
 
-        Rect rect = new Rect();
-        videoView.getLocalVisibleRect(rect);
 
+//        layout.addView();
 
-        Log.d("###", " top " + rect.top);
 
     }
 }
